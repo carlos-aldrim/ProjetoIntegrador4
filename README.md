@@ -45,13 +45,13 @@ git clone https://github.com/carlos-aldrim/ProjetoIntegrador4.git
 #### Frontend
 
 ```bash
-cd frontend && npm install
+cd ProjetoIntegrador4 && cd frontend && npm install
 ```
 
 #### Backend
 
 ```bash
-cd backend && npm install
+cd ProjetoIntegrador4 && cd backend && npm install
 ```
 
 ### 3. Configure o banco de dados
