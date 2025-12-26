@@ -45,13 +45,17 @@ git clone https://github.com/carlos-aldrim/ProjetoIntegrador4.git
 #### Frontend
 
 ```bash
-cd frontend && npm install
+cd ProjetoIntegrador4
+cd frontend
+npm install
 ```
 
 #### Backend
 
 ```bash
-cd backend && npm install
+cd ProjetoIntegrador4
+cd backend
+npm install
 ```
 
 ### 3. Configure o banco de dados
@@ -59,7 +63,8 @@ cd backend && npm install
 Rode as migrations para configurar o esquema do banco de dados:
 
 ```bash
-cd backend && npx prisma migrate dev
+cd backend
+npx prisma migrate dev
 ```
 
 ---
@@ -71,7 +76,8 @@ Caso haja alterações no esquema do banco de dados, siga os passos abaixo:
 1. **Resetar o banco de dados** (⚠️ Isso apagará todos os dados existentes):
 
 ```bash
-cd backend && npx prisma migrate reset
+cd backend
+npx prisma migrate reset
 ```
 
 2. **Gerar novas migrations**:
@@ -79,7 +85,8 @@ cd backend && npx prisma migrate reset
 Após ajustar o schema do Prisma, execute:
 
 ```bash
-cd backend && npx prisma migrate dev
+cd backend
+npx prisma migrate dev
 ```
 
 ---
@@ -107,7 +114,8 @@ Substitua os valores das variáveis `EMAIL_USER` e `EMAIL_PASS` com suas própri
 Para iniciar o servidor do frontend:
 
 ```bash
-cd frontend && npm run dev
+cd frontend
+npm start
 ```
 
 Por padrão, o sistema estará disponível em: [http://localhost:5173/](http://localhost:5173/)
@@ -117,7 +125,8 @@ Por padrão, o sistema estará disponível em: [http://localhost:5173/](http://l
 Para iniciar o servidor do backend:
 
 ```bash
-cd backend && npm run dev
+cd backend
+npm run dev
 ```
 
 Por padrão, a API estará disponível em: [http://localhost:3000/](http://localhost:3000/)
@@ -129,7 +138,8 @@ Por padrão, a API estará disponível em: [http://localhost:3000/](http://local
 Use a interface gráfica do Prisma Studio para gerenciar os dados:
 
 ```bash
-cd backend && npx prisma studio
+cd backend
+npx prisma studio
 ```
 
 Acesse no navegador: [http://localhost:5555/](http://localhost:5555/)
