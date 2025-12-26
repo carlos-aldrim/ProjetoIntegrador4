@@ -2,7 +2,7 @@
 
 ## Descrição do Projeto
 
-Sistema de Gerenciamento de Perguntas e Informações. Propomos a criação de um Quiz Interativo com foco na análise de habilidades e comportamentos de iniciantes no mundo da tecnologia, especialmente voltado para a preparação para a Olimpíada Brasileira de Informática (OBI). O quiz simula desafios práticos e teóricos, oferecendo aos participantes uma forma de identificar suas competências, pontos a melhorar e as estratégias de estudo mais eficazes para a competição.
+Sistema de **Gerenciamento e Análise de Desempenho Escolar**, desenvolvido com o objetivo de centralizar, organizar e avaliar informações de estudantes. A plataforma permite o acompanhamento do desempenho educacional por meio de indicadores, registros e avaliações, oferecendo suporte à tomada de decisões pedagógicas. O sistema é voltado para instituições de ensino e educadores, possibilitando a análise de habilidades, progresso escolar e pontos de melhoria dos alunos.
 
 ---
 
@@ -37,7 +37,7 @@ Certifique-se de ter as seguintes ferramentas instaladas antes de começar:
 Para clonar o repositório do projeto, execute o seguinte comando no terminal:
 
 ```bash
-git clone https://github.com/carlos-aldrim/ProjetoIntegrador4.git
+git clone https://github.com/carlos-aldrim/ProjetoIntegrador2.git
 ```
 
 ### 2. Instale as dependências
@@ -45,7 +45,7 @@ git clone https://github.com/carlos-aldrim/ProjetoIntegrador4.git
 #### Frontend
 
 ```bash
-cd ProjetoIntegrador4
+cd ProjetoIntegrador2
 cd frontend
 npm install
 ```
@@ -53,7 +53,7 @@ npm install
 #### Backend
 
 ```bash
-cd ProjetoIntegrador4
+cd ProjetoIntegrador2
 cd backend
 npm install
 ```
@@ -203,5 +203,17 @@ git push origin feature/US000001
 ```
 
 6. Abra um Pull Request no repositório original.
+
+## Atualização do Repositório (Git)
+
+Para manter o projeto atualizado com o repositório remoto, utilize os comandos abaixo:
+
+```bash
+git status
+git add .
+git commit -m "descrição da alteração"
+git pull origin master
+git push origin master
+```
 
 ---
