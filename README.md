@@ -217,3 +217,106 @@ git push origin master
 ```
 
 ---
+
+## Rotas da API
+
+### Autenticação e Registro
+
+#### **1. Criar Novo Usuário**
+`POST /usuario/new-user`  
+Cadastra um novo usuário no sistema, incluindo dados pessoais e endereço.
+
+**Exemplo de Corpo (JSON):**
+```json
+{
+  "mail": "exemplo@email.com",
+  "password": "senha_segura_123",
+  "image": "[https://link-da-foto.com/perfil.jpg](https://link-da-foto.com/perfil.jpg)",
+  "person": {
+    "firstName": "João",
+    "lastName": "Silva",
+    "cpf": "123.456.789-00",
+    "birthDate": "1990-05-15",
+    "phone": "11988887777",
+    "address": {
+      "zipCode": "01234-567",
+      "addressLine": "Rua das Flores",
+      "addressLineNumber": "100",
+      "neighborhood": "Centro",
+      "city": "São Paulo",
+      "state": "SP"
+    }
+  }
+}
+```
+
+#### **2. Login (Solicitar Token)**
+`POST /usuario/login`  
+Valida as credenciais e envia um código de verificação de 6 dígitos para o e-mail do usuário.
+
+**Exemplo de Corpo (JSON):**
+```json
+{
+  "mail": "exemplo@email.com",
+  "password": "senha_segura_123"
+}
+```
+
+#### **3. Confirmar Token (Finalizar Login)**
+`POST /usuario/confirm-token`  
+Valida o código recebido por e-mail e retorna o Token JWT para autenticação.
+
+**Exemplo de Corpo (JSON):**
+```json
+{
+  "mail": "exemplo@email.com",
+  "confirmToken": "123456"
+}
+```
+
+### Gerenciamento de Usuário
+
+#### **4. Obter Usuário Atual**
+`GET /usuario/my`  
+Retorna todos os dados do perfil do usuário autenticado no momento.
+
+**Exemplo de Resposta (JSON):**
+```json
+{
+  "id": "uuid-do-usuario",
+  "mail": "exemplo@email.com",
+  "isActive": true,
+  "personId": "uuid-da-pessoa",
+  "image": "url-da-imagem"
+}
+```
+
+#### **5. Atualizar Usuário**
+`POST /usuario/update-user`  
+Permite atualizar dados cadastrais, senha ou informações da pessoa. O e-mail é obrigatório para identificação.
+
+**Exemplo de Corpo (JSON):**
+```json
+{
+  "mail": "exemplo@email.com",
+  "isActive": true,
+  "image": "nova-foto-perfil.png",
+  "person": {
+    "firstName": "João Atualizado",
+    "phone": "11912345678"
+  }
+}
+```
+
+#### **6. Apagar Conta**
+`GET /usuario/delete-user`  
+Remove permanentemente a conta do usuário logado e todos os dados vinculados.
+
+**Exemplo de Resposta (JSON):**
+```json
+{
+  "message": "Conta apagada com sucesso"
+}
+```
+
+---
