@@ -115,7 +115,7 @@ Para iniciar o servidor do frontend:
 
 ```bash
 cd frontend
-npm run dev
+npm start
 ```
 
 Por padrão, o sistema estará disponível em: [http://localhost:5173/](http://localhost:5173/)
