@@ -68,7 +68,7 @@ export const Address: React.FC = () => {
           control={control}
           name="zipCode"
           label="CEP"
-          autoFocus
+          //autoFocus
           placeholder="Seu CEP"
           onBlur={handleBlurInputCep}
         />

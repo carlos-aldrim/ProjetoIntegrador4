@@ -61,7 +61,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
 
         if (response.status === 200) {
           setIsAuth(true);
-          navigate("/signup");
+          navigate("/");
           handleToast(response.data.message, "success");
         } else {
           handleToast(response.data.message, "error");

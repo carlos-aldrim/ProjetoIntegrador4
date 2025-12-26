@@ -39,9 +39,21 @@ export class LoginUserController {
           },
         });
 
+        const person = await prisma.person.findFirst({
+          where: {
+            id: user[0].personId,
+          },
+          select: {
+            firstName: true,
+            lastName: true,
+          },
+        });
+        
+        const fullName = person ? `${person.firstName} ${person.lastName}` : "Usuário";        
+
         await sendVerificationTokenEmail(
           mail,
-          user[0]?.name,
+          fullName,
           verificationToken
         );
 

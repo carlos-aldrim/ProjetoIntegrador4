@@ -32,7 +32,17 @@ export class ConfirmTokenUserController {
         return res.status(400).send({ message: "Usuário não encontrado!" });
       }
 
-      await sendSuccessLoginEmail(mail, user.name);
+      const person = await prisma.person.findUnique({
+        where: { id: user.personId },
+        select: {
+          firstName: true,
+          lastName: true,
+        },
+      });
+      
+      const fullName = person ? `${person.firstName} ${person.lastName}` : "Usuário";      
+
+      await sendSuccessLoginEmail(mail, fullName);
 
       const jwtToken = JsonWebToken.sign(
         { mail: user.mail },
