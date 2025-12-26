@@ -1,4 +1,4 @@
-## Projeto Integrador 2
+## Projeto Integrador 4
 
 ## Descrição do Projeto
 
@@ -37,7 +37,7 @@ Certifique-se de ter as seguintes ferramentas instaladas antes de começar:
 Para clonar o repositório do projeto, execute o seguinte comando no terminal:
 
 ```bash
-git clone https://github.com/carlos-aldrim/ProjetoIntegrador2.git
+git clone https://github.com/carlos-aldrim/ProjetoIntegrador4.git
 ```
 
 ### 2. Instale as dependências
