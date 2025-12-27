@@ -219,4 +219,20 @@ export class UserRepository {
       `;
     });
   }
+
+  async FindByCpf(cpf: string): Promise<User[]> {
+    const user = await this.prisma.$queryRaw<User[]>`
+      SELECT 
+        u.id, u.mail, u.password, u.image, u.isActive, u.recoverPassword,
+        p.firstName, p.lastName, p.cpf, p.birthDate, p.phone,
+        a.zipCode, a.addressLine, a.addressLineNumber, a.neighborhood, a.city, a.state
+      FROM "main"."users" u
+      LEFT JOIN "main"."persons" p ON u.personId = p.id
+      LEFT JOIN "main"."addresses" a ON p.id = a.personId
+      WHERE p.cpf = ${cpf}
+        AND u.deletionDate IS NULL;
+    `;
+
+    return user;
+  }
 }

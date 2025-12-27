@@ -37,6 +37,11 @@ export const FormStepsProvider: React.FC<{ children: React.ReactNode }> = ({
     setCurrentStep((prevState) => prevState - 1);
   }, [currentStep]);
 
+  const resetFormSteps = useCallback(() => {
+    setCreateUserData({} as DataCreateUser);
+    setCurrentStep(0);
+  }, []);
+
   const value = useMemo(
     () => ({
       data: createUserData,
@@ -44,6 +49,7 @@ export const FormStepsProvider: React.FC<{ children: React.ReactNode }> = ({
       updateFormData,
       goToNextStep,
       goToPreviousStep,
+      resetFormSteps,
     }),
     [
       createUserData,
@@ -51,6 +57,7 @@ export const FormStepsProvider: React.FC<{ children: React.ReactNode }> = ({
       updateFormData,
       goToNextStep,
       goToPreviousStep,
+      resetFormSteps,
     ]
   );
 

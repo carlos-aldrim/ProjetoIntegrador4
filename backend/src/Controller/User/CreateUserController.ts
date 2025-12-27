@@ -16,6 +16,12 @@ export class CreateUserController {
       return res.status(400).send({ message: "Email já cadastrado!" });
     }
 
+    const isCpfExists = await userService.FindByCpf(person.cpf);
+
+    if (isCpfExists.length > 0) {
+      return res.status(400).send({ message: "CPF já cadastrado!" });
+    }
+
     const user = await userService.Save({ mail, password, image, person });
 
     if (user) {

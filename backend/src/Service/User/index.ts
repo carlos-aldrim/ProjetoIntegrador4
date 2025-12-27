@@ -77,5 +77,15 @@ export class UserService {
       new AppLogger().error(error);
       return null;
     }
-  }  
+  }
+  
+  async FindByCpf(cpf: string) {
+    try {
+      const user = await this.userRepository.FindByCpf(cpf);
+      return user;
+    } catch (error: any) {
+      new AppLogger().error(error);
+      return [];
+    }
+  }
 }

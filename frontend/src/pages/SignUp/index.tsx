@@ -1,10 +1,18 @@
 import React, { useEffect } from "react";
 import { SidebarSteps, RenderConditional, Name, Address, Identification, Security } from "../../components";
 import { useFormSteps, useUser } from "../../hooks";
+import { useLocation } from "react-router-dom";
 
 export const SignUpPage: React.FC = () => {
-  const { currentStep, data } = useFormSteps();
+  const { currentStep, data, resetFormSteps } = useFormSteps();
   const { createUser } = useUser();
+  const location = useLocation();
+
+  useEffect(() => {
+    if (location.state?.resetForm) {
+      resetFormSteps();
+    }
+  }, [location.state, resetFormSteps]);
 
   useEffect(() => {
     if (currentStep === 4) {

@@ -14,6 +14,10 @@ export const UserContext = createContext<UserContextType | undefined>(
   undefined
 );
 
+interface ApiError {
+  message: string;
+}
+
 export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
@@ -92,12 +96,24 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
           navigate("/");
           handleToast(response.data.message, "success");
         } else {
-          navigate("/");
+          navigate("/signup");
           handleToast(response.data.message, "error");
         }
       } catch (error) {
-        console.log(error);
-        handleToast("Falha ao criar o usuário.", "error");
+        if (axios.isAxiosError(error)) {
+          const message = (error.response?.data as ApiError)?.message || "Erro ao criar o usuário.";
+          navigate("/signup");
+          handleToast(message, "error");
+          navigate("/signup", {
+            state: { resetForm: true },
+          });
+        } else {
+          navigate("/signup");
+          handleToast("Erro inesperado ao criar o usuário.", "error");
+          navigate("/signup", {
+            state: { resetForm: true },
+          });
+        }
       } finally {
         setLoading(false);
       }
