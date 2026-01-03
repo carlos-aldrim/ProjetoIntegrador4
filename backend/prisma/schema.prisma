@@ -73,3 +73,12 @@ model VerificationToken {
 
   @@index([userId], name: "user_id_idx")
 }
+
+model AnswerKey {
+  id        String   @id @default(uuid())
+  title     String
+  answers   String
+  userId String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

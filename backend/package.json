@@ -21,13 +21,14 @@
     "multer": "^1.4.5-lts.1",
     "nodemailer": "^6.9.15",
     "prisma": "^5.19.1",
+    "tesseract.js": "^7.0.0",
     "uuid": "^10.0.0"
   },
   "devDependencies": {
     "@types/cors": "^2.8.17",
     "@types/jsonwebtoken": "^9.0.6",
     "@types/multer": "^1.4.12",
-    "@types/node": "^22.5.5",
+    "@types/node": "^22.19.3",
     "@types/nodemailer": "^6.4.15",
     "@types/uuid": "^10.0.0",
     "nodemon": "^3.1.4",
