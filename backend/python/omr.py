@@ -3,10 +3,13 @@ import sys
 import json
 import numpy as np
 
+from bolha_classifier import carregar_modelo, bolha_marcada
+
+
 # ============================================================
 # CONFIGURAÇÃO GLOBAL
 # ============================================================
-DEBUG = False  # ⬅️ Troque para False em produção (Postman/API)
+DEBUG = True  # ⬅️ Troque para False em produção (Postman/API)
 
 # ============================================================
 # CONFIGURAÇÕES DA PROVA
@@ -17,9 +20,20 @@ ALTERNATIVAS = ["A", "B", "C", "D", "E"]
 AREA_MIN = 280
 AREA_MAX = 3000
 
-FILL_THRESHOLD = 0.45
-DIFERENCA_MINIMA = 0.05   # diferença mínima entre 1ª e 2ª bolha
-LIMIAR_MINIMO = 0.30     # abaixo disso considera branco
+def score_bolha(roi):
+    h, w = roi.shape
+
+    centro = roi[
+        int(h*0.3):int(h*0.7),
+        int(w*0.3):int(w*0.7)
+    ]
+
+    densidade_centro = cv2.countNonZero(centro) / float(centro.size)
+    densidade_total = cv2.countNonZero(roi) / float(roi.size)
+
+    # Bolha marcada → centro bem mais escuro que a borda
+    return densidade_centro - densidade_total
+
 
 # ============================================================
 # LEITURA DA IMAGEM
@@ -30,6 +44,8 @@ image = cv2.imread(image_path)
 if image is None:
     print(json.dumps({"error": "Imagem não encontrada"}))
     sys.exit(1)
+
+clf = carregar_modelo()
 
 # ---------------- DEBUG ----------------
 if DEBUG:
@@ -139,84 +155,71 @@ for bolha in bolhas:
         linhas.append([bolha])
 
 # ============================================================
-# LEITURA DAS RESPOSTAS
+# LEITURA DAS RESPOSTAS (CLASSIFICADOR + DESEMPATE POR FORMA)
 # ============================================================
 respostas = {}
 
 for i, linha in enumerate(linhas[:NUM_QUESTOES]):
 
-    # Ordena as bolhas da esquerda para a direita (A → E)
     linha = sorted(linha, key=lambda b: b[0])
-
-    valores = []
-
-    # ---------------- SEGURANÇA ----------------
-    # Se a linha não tem bolhas suficientes, invalida a questão
-    if len(linha) < 3:
-        respostas[str(i + 1)] = "invalida"
-        if DEBUG:
-            print(f"Q{i+1} inválida — bolhas detectadas: {len(linha)}")
-        continue
-    # -------------------------------------------
+    marcadas = []
+    scores = []
 
     for idx, (x, y, w, h) in enumerate(linha[:len(ALTERNATIVAS)]):
 
-        # Remove a borda da bolha (evita contar o círculo)
         margem = int(w * 0.25)
-        roi = thresh[
+
+        # ---------------- ROI REAL (ESCALA DE CINZA) ----------------
+        roi_gray = gray[
             y + margem : y + h - margem,
             x + margem : x + w - margem
         ]
 
-        total = roi.shape[0] * roi.shape[1]
-        pixels_brancos = cv2.countNonZero(roi)
-        percentual = pixels_brancos / float(total)
+        # ---------------- ROI BINÁRIA (SÓ PARA FORMA) ----------------
+        roi_thresh = thresh[
+            y + margem : y + h - margem,
+            x + margem : x + w - margem
+        ]
 
-        valores.append((percentual, ALTERNATIVAS[idx]))
+        # ===============================
+        # MÉTRICA REAL DE PREENCHIMENTO
+        # ===============================
+        media = np.mean(roi_gray)
+        preenchido = 1.0 - (media / 255.0)
 
-        # ---------------- DEBUG ----------------
+        # Score morfológico continua válido
+        score = score_bolha(roi_thresh)
+        scores.append((score, ALTERNATIVAS[idx]))
+
+        # ---------------- DECISÃO PRIMÁRIA ----------------
+        if preenchido > 0.45:
+            marcadas.append(ALTERNATIVAS[idx])
+
+        elif 0.35 < preenchido <= 0.45:
+            # zona cinza → IA decide com imagem REAL
+            if bolha_marcada(roi_gray, clf):
+                marcadas.append(ALTERNATIVAS[idx])
+
         if DEBUG:
-            print(f"Q{i+1} {ALTERNATIVAS[idx]} -> preenchido: {percentual:.2f}")
-        # --------------------------------------
-
-    # Ordena da mais marcada para a menos marcada
-    valores.sort(reverse=True)
+            print(f"Q{i+1} {ALTERNATIVAS[idx]} -> tinta={preenchido:.2f}")
 
     # ============================
-    # DECISÃO DA RESPOSTA
+    # DECISÃO FINAL DA QUESTÃO
     # ============================
 
-    # CASO 1 — nenhuma bolha válida
-    if len(valores) == 0:
+    if len(marcadas) == 0:
         respostas[str(i + 1)] = "branco"
 
-    # CASO 2 — apenas uma bolha
-    elif len(valores) == 1:
-        maior_valor, melhor_alternativa = valores[0]
+    elif len(marcadas) == 1:
+        respostas[str(i + 1)] = marcadas[0]
 
-        if maior_valor < LIMIAR_MINIMO:
-            respostas[str(i + 1)] = "branco"
-        else:
-            respostas[str(i + 1)] = melhor_alternativa
-
-    # CASO 3 — duas ou mais bolhas
     else:
-        maior_valor, melhor_alternativa = valores[0]
-        segundo_valor = valores[1][0]
+        scores.sort(reverse=True)
 
-        if maior_valor < LIMIAR_MINIMO:
-            respostas[str(i + 1)] = "branco"
-
-        #  SÓ ANULA se DUAS bolhas realmente passaram do threshold
-        elif (
-            maior_valor >= FILL_THRESHOLD and
-            segundo_valor >= FILL_THRESHOLD
-        ):
-            respostas[str(i + 1)] = "anulada"
-
+        if scores[0][0] - scores[1][0] > 0.05:
+            respostas[str(i + 1)] = scores[0][1]
         else:
-            respostas[str(i + 1)] = melhor_alternativa
-
+            respostas[str(i + 1)] = "anulada"
 
 
 # ============================================================

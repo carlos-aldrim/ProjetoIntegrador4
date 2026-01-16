@@ -8,7 +8,7 @@ interface RequestDTO {
 
 export class ExamCorrectionService {
   static async execute({ answerKeyId, imagePath }: RequestDTO) {
-    const gabarito = await prisma.answerKey.findUnique({
+    const gabarito = await prisma.gabarito.findUnique({
       where: { id: answerKeyId },
     });
 
@@ -20,7 +20,7 @@ export class ExamCorrectionService {
     const respostasAluno = await runOMR(imagePath);
 
     const respostasCorretas: Record<string, string> =
-      JSON.parse(gabarito.answers);
+      JSON.parse(gabarito.respostas);
 
     let totalAcertos = 0;
     const resultadoPorQuestao: Record<string, "correta" | "incorreta"> = {};

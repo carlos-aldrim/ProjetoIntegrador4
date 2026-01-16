@@ -1,11 +1,16 @@
 import { Router } from "express";
-import { AnswerKeyController } from "../../Controller/Exam/AnswerKeyController";
+import { ensureAutheticated } from "../../Middlewares/Auth";
+import { GabaritoController } from "../../Controller/Exam/GabaritoController";
 import { upload } from "../../Config/upload";
 import { ExamCorrectionController } from "../../Controller/Exam/ExamCorrectionController";
 
 const examRoutes = Router();
 
-examRoutes.post("/answer-keys", AnswerKeyController.create);
+examRoutes.post(
+  "/create-gabarito",
+  ensureAutheticated,
+  GabaritoController.create
+);
 
 examRoutes.post(
   "/correct",
