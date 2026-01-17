@@ -9,13 +9,31 @@ from bolha_classifier import carregar_modelo, bolha_marcada
 # ============================================================
 # CONFIGURAÇÃO GLOBAL
 # ============================================================
-DEBUG = True  # ⬅️ Troque para False em produção (Postman/API)
+DEBUG = False  # ⬅️ Troque para False em produção (Postman/API)
 
 # ============================================================
-# CONFIGURAÇÕES DA PROVA
+# CONFIGURAÇÕES DA PROVA (DINÂMICAS)
 # ============================================================
-NUM_QUESTOES = 7
-ALTERNATIVAS = ["A", "B", "C", "D", "E"]
+NUM_QUESTOES = None
+ALTERNATIVAS = None
+
+if len(sys.argv) > 2:
+    try:
+        config = json.loads(sys.argv[2])
+        NUM_QUESTOES = int(config["quantidade_questoes"])
+        ALTERNATIVAS = config["alternativas"]
+    except Exception:
+        print(json.dumps({"error": "Configuração da prova inválida"}))
+        sys.exit(1)
+
+# Fallback apenas para DEBUG
+if NUM_QUESTOES is None or ALTERNATIVAS is None:
+    if DEBUG:
+        NUM_QUESTOES = 7
+        ALTERNATIVAS = ["A", "B", "C", "D", "E"]
+    else:
+        print(json.dumps({"error": "Configuração da prova não informada"}))
+        sys.exit(1)
 
 AREA_MIN = 280
 AREA_MAX = 3000
