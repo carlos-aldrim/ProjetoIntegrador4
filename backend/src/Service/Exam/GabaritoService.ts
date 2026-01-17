@@ -1,5 +1,6 @@
 import { prisma } from "../../prisma";
 import { normalizarTitulo } from "../../Util/normalizarTexto";
+import { UpdateGabaritoDTO } from "../../DTO/Exam/UpdateGabaritoDTO";
 
 type CreateGabaritoDTO = {
   titulo: string;
@@ -89,6 +90,63 @@ export class GabaritoService {
         respostas: JSON.stringify(respostas),
         usuarioId: userId,
       },
+    });
+  }
+
+  static async getById(id: string) {
+    const gabarito = await prisma.gabarito.findUnique({
+      where: { id },
+    });
+
+    if (!gabarito) return null;
+
+    // Retornamos o objeto original, o controller vai fazer o parse
+    return gabarito;
+  }
+
+  static async getAllByUser(userId: string) {
+  const gabaritos = await prisma.gabarito.findMany({
+    where: { usuarioId: userId },
+    orderBy: { createdAt: "desc" }, // opcional: ordena do mais recente para o mais antigo
+  });
+
+  return gabaritos;
+}
+
+  static async update(id: string, data: UpdateGabaritoDTO) {
+    const gabaritoExistente = await prisma.gabarito.findUnique({
+      where: { id },
+    });
+
+    if (!gabaritoExistente) {
+      throw new Error("Gabarito não encontrado.");
+    }
+
+    return prisma.gabarito.update({
+      where: { id },
+      data: {
+        titulo: data.titulo?.trim() || gabaritoExistente.titulo,
+        configuracao: data.configuracao
+          ? JSON.stringify(data.configuracao)
+          : gabaritoExistente.configuracao,
+        respostas: data.respostas
+          ? JSON.stringify(data.respostas)
+          : gabaritoExistente.respostas,
+      },
+    });
+  }
+
+  static async delete(id: string) {
+    const gabaritoExistente = await prisma.gabarito.findUnique({
+      where: { id },
+    });
+
+    if (!gabaritoExistente) {
+      throw new Error("Gabarito não encontrado.");
+    }
+
+    return prisma.gabarito.delete({
+      where: { id },
     });
   }
 }

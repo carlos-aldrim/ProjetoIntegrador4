@@ -12,6 +12,30 @@ examRoutes.post(
   GabaritoController.create
 );
 
+examRoutes.get(
+  "/obter-gabarito/:id",
+  ensureAutheticated,
+  GabaritoController.getById
+);
+
+examRoutes.get(
+  "/meus-gabaritos",
+  ensureAutheticated,
+  GabaritoController.getAllByUser
+);
+
+examRoutes.put(
+  "/atualizar-gabarito/:id",
+  ensureAutheticated,
+  GabaritoController.update
+);
+
+examRoutes.delete(
+  "/deletar-gabarito/:id",
+  ensureAutheticated,
+  GabaritoController.delete
+);
+
 examRoutes.post(
   "/corrigir-prova",
   ensureAutheticated,
