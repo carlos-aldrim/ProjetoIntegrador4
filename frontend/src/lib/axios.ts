@@ -1,7 +1,7 @@
 import axios, { AxiosError } from "axios";
 
 export const api = axios.create({
-  baseURL: "",
+  baseURL: "http://localhost:3001",
 });
 
 export const getAuthorization = (token: string) => {
@@ -18,7 +18,7 @@ export interface ApiAxiosRequest<T> {
 }
 
 export interface ApiAxiosRequestError<T>
-  extends AxiosError<ApiAxiosRequest<T>> {}
+  extends AxiosError<ApiAxiosRequest<T>> { }
 
 export interface ApiProductsAxiosRequest<L> {
   success: boolean;

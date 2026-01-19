@@ -24,7 +24,10 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
   const { handleToast } = useToast();
   const [user, setUser] = useState<User | null>(null);
   const [isLogin, setIsLogin] = useState(false);
-  const [isAuth, setIsAuth] = useState(false);
+  const [isAuth, setIsAuth] = useState(() => {
+    const token = localStorage.getItem("token");
+    return !!token;
+  });
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -64,6 +67,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
         );
 
         if (response.status === 200) {
+          localStorage.setItem("token", response.data.token);
           setIsAuth(true);
           navigate("/home");
           handleToast(response.data.message, "success");
@@ -125,7 +129,9 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
     setUser(null);
     setIsLogin(false);
     setIsAuth(false);
-  }, []);
+    localStorage.removeItem("token");
+    navigate("/");
+  }, [navigate]);
 
   const contextValue = useMemo(
     () => ({

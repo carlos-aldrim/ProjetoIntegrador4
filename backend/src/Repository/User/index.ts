@@ -5,7 +5,7 @@ import { UpdateUserDTO } from "../../DTO/User/UpdateUserDTO";
 import { User } from "../../DTO/User/UserDTO";
 
 export class UserRepository {
-  constructor(private prisma: PrismaClient) {}
+  constructor(private prisma: PrismaClient) { }
 
   async Save(userData: SaveUserDTO): Promise<string[]> {
     const { mail, password, image, person } = userData;
@@ -118,20 +118,22 @@ export class UserRepository {
   async Update(user: UpdateUserDTO, id: string): Promise<void> {
     await this.prisma.$transaction(async (prisma) => {
       const updateUserFields: string[] = [];
-      if (user.mail) updateUserFields.push(`"mail" = ${user.mail}`);
-      if (user.image) updateUserFields.push(`"image" = ${user.image}`);
+      if (user.mail) updateUserFields.push(`"mail" = '${user.mail}'`);
+      if (user.image) updateUserFields.push(`"image" = '${user.image}'`);
       if (user.isActive !== undefined)
         updateUserFields.push(`"isActive" = ${user.isActive}`);
-      if (user.password) updateUserFields.push(`"password" = ${user.password}`);
+      if (user.password) updateUserFields.push(`"password" = '${user.password}'`);
 
       if (updateUserFields.length > 0) {
+        console.log("Updating users table...");
         await prisma.$executeRawUnsafe(`
           UPDATE "main"."users"
           SET ${updateUserFields.join(", ")}
-          WHERE "id" = ${id}
+          WHERE "id" = '${id}'
         `);
       }
 
+      console.log("Fetching personId...");
       const person = await prisma.$queryRaw<{ personId: string }[]>`
         SELECT "personId"
         FROM "main"."users"
@@ -139,50 +141,51 @@ export class UserRepository {
       `;
 
       const personId = person[0]?.personId;
+      console.log("PersonId found:", personId);
 
       if (user.person && personId) {
         const { firstName, lastName, cpf, birthDate, phone, address } =
           user.person;
 
         const updatePersonFields: string[] = [];
-        if (firstName) updatePersonFields.push(`"firstName" = ${firstName}`);
-        if (lastName) updatePersonFields.push(`"lastName" = ${lastName}`);
-        if (cpf) updatePersonFields.push(`"cpf" = ${cpf}`);
-        if (birthDate) updatePersonFields.push(`"birthDate" = ${birthDate}`);
-        if (phone) updatePersonFields.push(`"phone" = ${phone}`);
+        if (firstName) updatePersonFields.push(`"firstName" = '${firstName}'`);
+        if (lastName) updatePersonFields.push(`"lastName" = '${lastName}'`);
+        if (cpf) updatePersonFields.push(`"cpf" = '${cpf}'`);
+        if (birthDate) updatePersonFields.push(`"birthDate" = '${birthDate}'`);
+        if (phone) updatePersonFields.push(`"phone" = '${phone}'`);
 
         if (updatePersonFields.length > 0) {
           await prisma.$executeRawUnsafe(`
             UPDATE "main"."persons"
             SET ${updatePersonFields.join(", ")}
-            WHERE "id" = ${personId}
+            WHERE "id" = '${personId}'
           `);
         }
 
         if (address) {
           const updateAddressFields: string[] = [];
           if (address.zipCode)
-            updateAddressFields.push(`"zipCode" = ${address.zipCode}`);
+            updateAddressFields.push(`"zipCode" = '${address.zipCode}'`);
           if (address.addressLine)
-            updateAddressFields.push(`"addressLine" = ${address.addressLine}`);
+            updateAddressFields.push(`"addressLine" = '${address.addressLine}'`);
           if (address.addressLineNumber)
             updateAddressFields.push(
-              `"addressLineNumber" = ${address.addressLineNumber}`
+              `"addressLineNumber" = '${address.addressLineNumber}'`
             );
           if (address.neighborhood)
             updateAddressFields.push(
-              `"neighborhood" = ${address.neighborhood}`
+              `"neighborhood" = '${address.neighborhood}'`
             );
           if (address.city)
-            updateAddressFields.push(`"city" = ${address.city}`);
+            updateAddressFields.push(`"city" = '${address.city}'`);
           if (address.state)
-            updateAddressFields.push(`"state" = ${address.state}`);
+            updateAddressFields.push(`"state" = '${address.state}'`);
 
           if (updateAddressFields.length > 0) {
             await prisma.$executeRawUnsafe(`
               UPDATE "main"."addresses"
               SET ${updateAddressFields.join(", ")}
-              WHERE "personId" = ${personId}
+              WHERE "personId" = '${personId}'
             `);
           }
         }

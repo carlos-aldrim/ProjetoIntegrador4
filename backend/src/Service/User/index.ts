@@ -5,7 +5,7 @@ import { UserRepository } from "../../Repository/User";
 import { encrypt } from "../../Util/Cryptography";
 
 export class UserService {
-  constructor(private userRepository: UserRepository) {}
+  constructor(private userRepository: UserRepository) { }
 
   async Save({ mail, password, image, person }: SaveUserDTO) {
     try {
@@ -54,6 +54,7 @@ export class UserService {
       );
       return userUpdate;
     } catch (error: any) {
+      console.error(error);
       new AppLogger().error(error);
       return null;
     }
@@ -67,7 +68,7 @@ export class UserService {
       new AppLogger().error(error);
       return null;
     }
-  }  
+  }
 
   async FindUserById(id: string) {
     try {
@@ -78,7 +79,7 @@ export class UserService {
       return null;
     }
   }
-  
+
   async FindByCpf(cpf: string) {
     try {
       const user = await this.userRepository.FindByCpf(cpf);

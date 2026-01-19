@@ -1,8 +1,10 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import Logout from '../../components/Logout';
 
 export const HomePage: React.FC = () => {
-    
+    const navigate = useNavigate();
+
     return (
         <div>
             <div className="max-w-4xl w-full bg-white rounded-2xl shadow-xl overflow-hidden">
@@ -18,7 +20,15 @@ export const HomePage: React.FC = () => {
                             Seu login foi realizado com sucesso e seu token foi validado.
                         </p>
                     </div>
-                    <Logout/>
+                    <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                        <button
+                            onClick={() => navigate('/user')}
+                            className="px-8 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-75 transition-colors duration-200 w-full sm:w-auto"
+                        >
+                            Editar Perfil
+                        </button>
+                        <Logout />
+                    </div>
                 </div>
             </div>
         </div>
