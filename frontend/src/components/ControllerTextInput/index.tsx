@@ -5,14 +5,12 @@ import { TextInputProps } from "../TextInput";
 type ControllerTextInputProps = {
   control: Control<any, object>;
   name: string;
-  defaultValue?: string;
   rules?: any;
 } & Omit<TextInputProps, "value">;
 
 export const ControllerTextInput: React.FC<ControllerTextInputProps> = ({
   control,
   name,
-  defaultValue = "",
   rules,
   ...rest
 }) => {
@@ -22,7 +20,6 @@ export const ControllerTextInput: React.FC<ControllerTextInputProps> = ({
         control={control}
         name={name}
         rules={rules}
-        defaultValue={defaultValue}
         render={({ field, fieldState: { error } }) => {
           return (
             <div className="relative w-full">

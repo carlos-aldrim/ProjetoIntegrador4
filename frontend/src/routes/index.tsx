@@ -1,22 +1,21 @@
 import { Routes, Route } from "react-router-dom";
 import { PrivateRouter } from "../components";
-import { useUser } from "../hooks/UseUser";
 import { SignInPage, TokenPage, SignUpPage, ProfilePage } from "../pages";
 
+import { ForgotPasswordPage } from "../pages";
+import { ResetPasswordPage } from "../pages";
+
 export const Router = () => {
-  const { isLogin } = useUser();
 
   return (
     <Routes>
       <Route path="/" element={<SignInPage />} />
 
+      <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+
       <Route
         path="/confirm-token"
-        element={
-          <PrivateRouter auth={isLogin}>
-            <TokenPage />
-          </PrivateRouter>
-        }
+        element={<TokenPage />}
       />
 
       <Route
@@ -36,6 +35,8 @@ export const Router = () => {
           </PrivateRouter>
         }
       />
+
+      <Route path="/reset-password" element={<ResetPasswordPage />} />
     </Routes>
   );
 };

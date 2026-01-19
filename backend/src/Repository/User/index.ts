@@ -235,4 +235,20 @@ export class UserRepository {
 
     return user;
   }
+
+  async UpdateRecoverPasswordToken(mail: string, token: string): Promise<void> {
+    await this.prisma.$executeRaw`
+      UPDATE "main"."users"
+      SET "recoverPassword" = ${token}
+      WHERE "mail" = ${mail} AND "deletionDate" IS NULL;
+    `;
+  }
+
+  async UpdatePassword(mail: string, password: string): Promise<void> {
+    await this.prisma.$executeRaw`
+      UPDATE "main"."users"
+      SET "password" = ${password}
+      WHERE "mail" = ${mail} AND "deletionDate" IS NULL;
+    `;
+  }
 }
