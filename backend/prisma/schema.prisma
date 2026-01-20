@@ -73,3 +73,15 @@ model VerificationToken {
 
   @@index([userId], name: "user_id_idx")
 }
+
+model Gabarito {
+  id           String   @id @default(uuid())
+  titulo       String
+  respostas    String   // JSON em string
+  configuracao String  // JSON em string (opcional)
+  usuarioId    String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+
