@@ -1,7 +1,7 @@
 import { Routes, Route } from "react-router-dom";
 import { PrivateRouter } from "../components";
 import { useUser } from "../hooks/UseUser";
-import { SignInPage, TokenPage, SignUpPage, HomePage, UserPage } from "../pages";
+import { SignInPage, TokenPage, SignUpPage, HomePage, UserPage, CorrecaoPage } from "../pages";
 
 export const Router = () => {
   const { isLogin, isAuth } = useUser();
@@ -34,6 +34,15 @@ export const Router = () => {
         element={
           <PrivateRouter auth={isAuth}>
             <UserPage />
+          </PrivateRouter>
+        }
+      />
+
+      <Route
+        path="/corrigir-prova"
+        element={
+          <PrivateRouter auth={isAuth}>
+            <CorrecaoPage />
           </PrivateRouter>
         }
       />

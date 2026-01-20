@@ -3,3 +3,4 @@ export * from "./SignUp";
 export * from "./Token";
 export * from "./Home";
 export * from "./User";
+export * from "./Correcao";
