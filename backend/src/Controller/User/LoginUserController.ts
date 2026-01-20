@@ -19,7 +19,7 @@ export class LoginUserController {
       const passwordCrypto = encrypt(password);
       const user: any = await userService.Login(mail, passwordCrypto);
 
-      if (user.length === 0) {
+      if (!user || user.length === 0) {
         return res.status(400).send({ message: "Usuario ou senha invalidos!" });
       }
 
