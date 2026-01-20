@@ -1,20 +1,42 @@
-import React from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { TokenInput } from "../../components";
 import { useUser } from "../../hooks/UseUser";
+import { api } from "../../lib/axios";
 
 export const TokenPage: React.FC = () => {
   const { login, confirmUser, user } = useUser();
   const navigate = useNavigate();
+  const location = useLocation();
+  const email = location.state?.mail;
+
+  const [message, setMessage] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleTokenComplete = async (token: string) => {
-    if (user?.mail) {
+    setMessage(null);
+    setIsLoading(true);
+    if (email) {
+      try {
+        await api.post("/usuario/confirm-token-reset", { mail: email, token });
+        navigate("/reset-password", { state: { mail: email } });
+      } catch (error: any) {
+        setMessage(
+          error?.response?.data?.message || "Token inválido. Tente novamente."
+        );
+      } finally {
+        setIsLoading(false);
+      }
+    } else if (user?.mail) {
       await confirmUser(user.mail, token);
+      setIsLoading(false);
     }
   };
 
   const handleResendToken = async () => {
-    if (user?.mail && user?.password) {
+    if (email) {
+      // Chame o endpoint para reenviar token de reset de senha
+    } else if (user?.mail && user?.password) {
       await login(user.mail, user.password);
     }
   };
@@ -32,10 +54,11 @@ export const TokenPage: React.FC = () => {
               <h3 className="text-white text-3xl font-extrabold">
                 Confirme seu E-mail
               </h3>
+              {message && (
+                <div className="text-center text-red-400 bg-zinc-700 p-2 rounded mb-2">{message}</div>
+              )}
               <p className="text-white text-md mt-4 leading-relaxed">
-                Para continuar, insira o código de verificação enviado para seu
-                e-mail. Esse código é necessário para confirmar sua identidade e
-                concluir o processo de cadastro.
+                Para continuar, insira o código de verificação enviado para seu e-mail. Esse código é necessário para confirmar sua identidade.
               </p>
 
               <TokenInput length={6} onComplete={handleTokenComplete} />
@@ -64,4 +87,4 @@ export const TokenPage: React.FC = () => {
       </div>
     </div>
   );
-};
+}
