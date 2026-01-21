@@ -72,7 +72,7 @@ export const ProfilePage: React.FC = () => {
       person
         ? `${person.firstName}+${person.lastName}`
         : "Usuario"
-    }&background=0D8ABC&color=fff`;
+    }&background=FFFFFF33&color=fff`;
 
   const handleAvatarChange = (file: any) => {
     if (Array.isArray(file)) {
@@ -112,94 +112,46 @@ export const ProfilePage: React.FC = () => {
 
 
   return (
-    <div className="w-full min-h-screen flex items-center justify-center bg-zinc-900 p-6">
-      <div className="w-full max-w-5xl bg-zinc-800 text-white rounded-xl shadow-lg">
-        
-        <div className="border-b border-zinc-700 px-8 py-5">
-          <h1 className="text-white text-3xl font-extrabold">Meu Perfil</h1>
-          <p className="text-sm text-zinc-400">Dados do usuário</p>
+    <div className="w-full min-h-screen flex items-center justify-center bg-zinc-800 px-4 py-8">
+      <div className="w-full max-w-5xl bg-zinc-800 rounded-2xl shadow-2xl overflow-hidden border-2 grid md:grid-cols-2 min-h-[600px]">
+
+        <div className="bg-[hsl(99,58%,52%)] p-12 flex flex-col items-center justify-center text-center space-y-6 relative">
+          <div className="bg-white/20 p-1 rounded-full backdrop-blur-sm shadow-xl w-36 h-36 flex items-center justify-center relative">
+            <img src={avatar} alt="Avatar" className="w-full h-full rounded-full object-cover shadow-sm" />
+          </div>
+          <div>
+            <h1 className="text-3xl font-extrabold text-white">Meu Perfil</h1>
+            <p className="text-green-950 font-medium text-lg">Dados do usuário</p>
+          </div>
         </div>
 
-        <div className="flex gap-10 px-8 py-8">
+        <div className="p-8 md:p-12 flex flex-col justify-between">
+          <div>
+            <h2 className="text-2xl font-bold text-white mb-2">Informações</h2>
+            <p className="text-gray-400 text-sm mb-6">Visualize os dados cadastrados da sua conta.</p>
 
-          <div className="w-48 flex flex-col items-center gap-4">
-            <img
-              src={avatar}
-              alt="Avatar"
-              className="w-36 h-36 rounded-full object-cover border-4 border-green-500"
-            />
-
-            <div className="w-full">
-              <UploadAvatar key={uploadKey} onHandleSelectedAvatar={handleAvatarChange} />
-
-              {photo && (
-                <div className="w-full mt-2">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      if (objectUrlRef.current) {
-                        URL.revokeObjectURL(objectUrlRef.current);
-                        objectUrlRef.current = null;
-                      }
-                      setPhoto(null);
-                      setUploadKey((k) => k + 1);
-                    }}
-                    className="w-full text-sm px-3 py-2 bg-zinc-600 hover:bg-zinc-500 text-white rounded-md"
-                  >
-                    Remover foto
-                  </button>
-                </div>
-              )}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <ProfileField label="Nome">{person ? person.firstName : "-"}</ProfileField>
+              <ProfileField label="Sobrenome">{person ? person.lastName : "-"}</ProfileField>
+              <ProfileField label="E-mail">{user?.mail || "-"}</ProfileField>
+              <ProfileField label="CPF">{person?.cpf || "-"}</ProfileField>
+              <ProfileField label="Telefone">{person?.phone || "-"}</ProfileField>
+              <ProfileField label="Data de nascimento">{person?.birthDate || "-"}</ProfileField>
+              <ProfileField label="Endereço" className="md:col-span-2">
+                {person?.address
+                  ? `${person.address.addressLine}, ${person.address.addressLineNumber} - ${person.address.city}/${person.address.state}`
+                  : "-"}
+              </ProfileField>
             </div>
           </div>
 
-          <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-6">
-            <ProfileField label="Nome">
-              {person
-                ? `${person.firstName}`
-                : "-"}
-            </ProfileField>
-
-            <ProfileField label="Sobrenome">
-              {person
-                ? `${person.lastName}`
-                : "-"}
-            </ProfileField>
-
-            <ProfileField label="E-mail">
-              {user?.mail || "-"}
-            </ProfileField>
-
-            <ProfileField label="CPF">
-              {person?.cpf}
-            </ProfileField>
-
-            <ProfileField label="Telefone">
-              {person?.phone}
-            </ProfileField>
-
-            <ProfileField label="Data de nascimento">
-              {person?.birthDate}
-            </ProfileField>
-
-            <ProfileField label="Endereço" className="md:col-span-2">
-              {person?.address
-                ? `${person.address.addressLine}, ${person.address.addressLineNumber} - ${person.address.city}/${person.address.state}`
-                : "-"}
-            </ProfileField>
-          </div>
-        </div>
-
-        <div className="flex justify-end gap-4 border-t border-zinc-700 px-8 py-5">
-          <div className="flex-1">
-            <Button text="Editar" onClick={() => navigate('/user')} />
-          </div>
-          <div className="flex-1">
-            <Button
-              text="Sair"
-              onClick={logout}
-              className="bg-red-600 hover:bg-red-700"
-            />
+          <div className="mt-6 flex gap-4">
+            <div className="flex-1">
+              <Button text="Editar" onClick={() => navigate('/user')} />
+            </div>
+            <div className="flex-1">
+              <Button text="Sair" onClick={logout} className="bg-red-600 hover:bg-red-700" />
+            </div>
           </div>
         </div>
       </div>
