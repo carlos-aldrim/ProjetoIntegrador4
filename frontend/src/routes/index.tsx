@@ -46,7 +46,7 @@ export const Router = () => {
       <Route
         path="/profile"
         element={
-          <PrivateRouter auth={true}>
+          <PrivateRouter auth={isAuth}>
             <ProfilePage />
           </PrivateRouter>
         }
