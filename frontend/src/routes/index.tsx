@@ -1,7 +1,7 @@
 import { Routes, Route } from "react-router-dom";
 import { PrivateRouter } from "../components";
 import { useUser } from "../hooks/UseUser";
-import { SignInPage, TokenPage, SignUpPage, HomePage, UserPage, CorrecaoPage, ProfilePage, ForgotPasswordPage, ResetPasswordPage } from "../pages";
+import { SignInPage, TokenPage, SignUpPage, HomePage, UserPage, CorrecaoPage, ProfilePage, ForgotPasswordPage, ResetPasswordPage, AdGabaritoPage } from "../pages";
 
 export const Router = () => {
   const { isLogin, isAuth } = useUser();
@@ -52,6 +52,14 @@ export const Router = () => {
         }
       />
       <Route path="/reset-password" element={<ResetPasswordPage />} />
+      <Route
+        path="/ad-gabarito"
+        element={
+          <PrivateRouter auth={isAuth}>
+            <AdGabaritoPage />
+          </PrivateRouter>
+        }
+      />
     </Routes>
   );
 };

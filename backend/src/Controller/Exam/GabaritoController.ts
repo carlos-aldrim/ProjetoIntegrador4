@@ -119,6 +119,7 @@ export class GabaritoController {
         id: g.id,
         titulo: g.titulo,
         configuracao: JSON.parse(g.configuracao),
+        respostas: JSON.parse(g.respostas),
         createdAt: g.createdAt,
         updatedAt: g.updatedAt,
       }));

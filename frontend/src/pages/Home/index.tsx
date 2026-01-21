@@ -44,13 +44,13 @@ export const HomePage: React.FC = () => {
                         <Button
                             text="Visualizar perfil"
                             icon={<User size={20} weight="bold" />}
-                            onClick={() => navigate('/')}
+                            onClick={() => navigate('/profile')}
                             className="bg-zinc-700 hover:bg-zinc-600 focus:ring-zinc-500 border border-zinc-600"
                         />
                         <Button
                             text="Adicionar Gabarito"
                             icon={<FilePlus size={20} weight="bold" />}
-                            onClick={() => navigate('/')}
+                            onClick={() => navigate('/ad-gabarito')}
                             className="bg-zinc-700 hover:bg-zinc-600 focus:ring-zinc-500 border border-zinc-600"
                         />
                         <Button

@@ -7,3 +7,4 @@ export * from "./ResetPassword";
 export * from "./Home";
 export * from "./User";
 export * from "./Correcao";
+export * from "./AdGabarito";
