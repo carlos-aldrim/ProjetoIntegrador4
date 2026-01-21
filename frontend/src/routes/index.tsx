@@ -1,7 +1,7 @@
 import { Routes, Route } from "react-router-dom";
 import { PrivateRouter } from "../components";
 import { useUser } from "../hooks/UseUser";
-import { SignInPage, TokenPage, SignUpPage, HomePage, UserPage, CorrecaoPage } from "../pages";
+import { SignInPage, TokenPage, SignUpPage, HomePage, UserPage, CorrecaoPage, ProfilePage, ForgotPasswordPage, ResetPasswordPage } from "../pages";
 
 export const Router = () => {
   const { isLogin, isAuth } = useUser();
@@ -9,16 +9,8 @@ export const Router = () => {
   return (
     <Routes>
       <Route path="/" element={<SignInPage />} />
-
-      <Route
-        path="/confirm-token"
-        element={
-          <PrivateRouter auth={isLogin}>
-            <TokenPage />
-          </PrivateRouter>
-        }
-      />
-
+      <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+      <Route path="/confirm-token" element={<TokenPage />} />
       <Route
         path="/home"
         element={
@@ -27,8 +19,6 @@ export const Router = () => {
           </PrivateRouter>
         }
       />
-
-
       <Route
         path="/user"
         element={
@@ -37,7 +27,6 @@ export const Router = () => {
           </PrivateRouter>
         }
       />
-
       <Route
         path="/corrigir-prova"
         element={
@@ -46,7 +35,6 @@ export const Router = () => {
           </PrivateRouter>
         }
       />
-
       <Route
         path="/signup"
         element={
@@ -55,6 +43,15 @@ export const Router = () => {
           </PrivateRouter>
         }
       />
+      <Route
+        path="/profile"
+        element={
+          <PrivateRouter auth={true}>
+            <ProfilePage />
+          </PrivateRouter>
+        }
+      />
+      <Route path="/reset-password" element={<ResetPasswordPage />} />
     </Routes>
   );
 };

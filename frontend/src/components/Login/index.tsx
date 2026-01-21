@@ -61,14 +61,14 @@ export const Login: React.FC = () => {
           }
         />
 
-        <div className="text-sm">
-          <a
-            href="jajvascript:void(0);"
-            className="text-[hsl(99,58%,52%)] hover:underline font-semibold"
-          >
-            Esqueceu sua senha?
-          </a>
-        </div>
+		<div className="text-sm">
+		  <Link
+			to="/forgot-password"
+			className="text-[hsl(99,58%,52%)] hover:underline font-semibold"
+		  >
+			Esqueceu sua senha?
+		  </Link>
+		</div>
 
         <Button text="Fazer login" className="mt-4" isLoading={loading} />
       </form>

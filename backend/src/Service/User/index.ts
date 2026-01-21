@@ -89,4 +89,28 @@ export class UserService {
       return [];
     }
   }
+  async UpdateRecoverPasswordToken(mail: string, token: string) {
+    try {
+      await this.userRepository.UpdateRecoverPasswordToken(mail, token);
+      return true;
+    } catch (error: any) {
+      new AppLogger().error(error);
+      return false;
+    }
+  }
+
+  async UpdatePassword(mail: string, password: string) {
+    try {
+      const user = await this.userRepository.FindByEmail(mail);
+      if (!user || user.length === 0) {
+        throw new Error("Usuário não encontrado");
+      }
+      const id = user[0].id;
+      await this.userRepository.UpdatePassword(mail, password);
+      return true;
+    } catch (error: any) {
+      new AppLogger().error(error);
+      return false;
+    }
+  }
 }
