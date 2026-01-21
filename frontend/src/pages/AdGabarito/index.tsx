@@ -96,6 +96,26 @@ export const AdGabaritoPage: React.FC = () => {
         setAlternatives(split);
     };
 
+    const handleDelete = async (id: string, e: React.MouseEvent) => {
+        e.stopPropagation();
+        if (!window.confirm("Tem certeza que deseja excluir este gabarito?")) {
+            return;
+        }
+
+        try {
+            const token = localStorage.getItem('token');
+            if (token) {
+                getAuthorization(token);
+                await api.delete(`/exam/deletar-gabarito/${id}`);
+                handleToast("Gabarito excluído com sucesso!", "success");
+                fetchGabaritos();
+            }
+        } catch (error) {
+            console.error("Erro ao excluir gabarito", error);
+            handleToast("Erro ao excluir gabarito.", "error");
+        }
+    };
+
     const onSubmit = async (data: AdGabaritoFormInputs) => {
         try {
             setIsLoading(true);
@@ -113,7 +133,7 @@ export const AdGabaritoPage: React.FC = () => {
                 }
             });
 
-            // Validate if all questions are answered
+         
             if (Object.keys(respostasObject).length !== data.quantidade_questoes) {
                 handleToast("Por favor, preencha o gabarito de todas as questões.", "error");
                 setIsLoading(false);
@@ -132,7 +152,7 @@ export const AdGabaritoPage: React.FC = () => {
             await api.post('/exam/criar-gabarito', payload);
             handleToast("Gabarito criado com sucesso!", "success");
             fetchGabaritos();
-            // navigate('/home'); // Optional: stay on page to see the new item
+        
 
         } catch (error) {
             console.error(error);
@@ -150,7 +170,7 @@ export const AdGabaritoPage: React.FC = () => {
         <div className="w-full min-h-screen flex flex-col items-center justify-start bg-zinc-800 px-4 py-8 gap-8">
             <div className="w-full max-w-4xl bg-zinc-800 rounded-2xl shadow-2xl overflow-hidden border-2">
 
-             
+
                 <div className="bg-[hsl(99,58%,52%)] p-6 flex items-center justify-between">
                     <div className="flex items-center gap-4">
                         <button
@@ -166,7 +186,7 @@ export const AdGabaritoPage: React.FC = () => {
                 <div className="p-8">
                     <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
 
-                     
+
                         <div className="grid md:grid-cols-2 gap-6 p-6 bg-zinc-700/30 rounded-xl border border-zinc-600">
                             <div className="space-y-2">
                                 <label className="text-sm font-medium text-gray-300">Título da Prova</label>
@@ -202,7 +222,7 @@ export const AdGabaritoPage: React.FC = () => {
                             </div>
                         </div>
 
-                     
+
                         <div className="space-y-4">
                             <h3 className="text-lg font-semibold text-white border-b border-zinc-700 pb-2">Respostas do Gabarito</h3>
 
@@ -213,7 +233,7 @@ export const AdGabaritoPage: React.FC = () => {
                                             {index + 1}
                                         </span>
 
-                                        <div className="flex flex-wrap gap-2 justify-center">
+                                        <div className="flex flex-wrap gap-2">
                                             {alternatives.map((opt) => (
                                                 <label key={opt} className="cursor-pointer group relative">
                                                     <input
@@ -246,7 +266,7 @@ export const AdGabaritoPage: React.FC = () => {
                 </div>
             </div>
 
-        
+
             <div className="w-full max-w-4xl bg-zinc-800 rounded-2xl shadow-2xl overflow-hidden border-2">
                 <div className="bg-zinc-700 p-6">
                     <h2 className="text-xl font-bold text-white">Gabaritos Cadastrados</h2>
@@ -258,20 +278,29 @@ export const AdGabaritoPage: React.FC = () => {
                     ) : (
                         gabaritos.map((gabarito) => (
                             <div key={gabarito.id} className="bg-zinc-700/30 border border-zinc-600 rounded-xl overflow-hidden">
-                                <button
-                                    onClick={() => toggleExpand(gabarito.id)}
-                                    className="w-full flex items-center justify-between p-4 hover:bg-zinc-700/50 transition-colors"
-                                >
-                                    <div className="flex flex-col items-start">
-                                        <span className="text-white font-semibold text-lg">{gabarito.titulo}</span>
-                                        <span className="text-sm text-gray-400">
-                                            {gabarito.configuracao.quantidade_questoes} Questões • {new Date(gabarito.createdAt).toLocaleDateString()}
-                                        </span>
-                                    </div>
-                                    <div className="text-gray-400">
-                                        {expandedGabarito === gabarito.id ? <CaretUp size={20} /> : <CaretDown size={20} />}
-                                    </div>
-                                </button>
+                                <div className="flex items-center justify-between w-full p-4 hover:bg-zinc-700/50 transition-colors">
+                                    <button
+                                        onClick={() => toggleExpand(gabarito.id)}
+                                        className="flex-1 flex items-center justify-between mr-4 text-left group"
+                                    >
+                                        <div className="flex flex-col items-start">
+                                            <span className="text-white font-semibold text-lg group-hover:text-[hsl(99,58%,52%)] transition-colors">{gabarito.titulo}</span>
+                                            <span className="text-sm text-gray-400">
+                                                {gabarito.configuracao.quantidade_questoes} Questões • {new Date(gabarito.createdAt).toLocaleDateString()}
+                                            </span>
+                                        </div>
+                                        <div className="text-gray-400">
+                                            {expandedGabarito === gabarito.id ? <CaretUp size={20} /> : <CaretDown size={20} />}
+                                        </div>
+                                    </button>
+                                    <button
+                                        onClick={(e) => handleDelete(gabarito.id, e)}
+                                        className="text-gray-400 hover:text-red-500 p-2 hover:bg-red-500/10 rounded-lg transition-all"
+                                        title="Excluir Gabarito"
+                                    >
+                                        <Trash size={20} weight="bold" />
+                                    </button>
+                                </div>
 
                                 {expandedGabarito === gabarito.id && (
                                     <div className="p-4 border-t border-zinc-600 bg-zinc-800/50">
