@@ -1,5 +1,5 @@
-import React, { useState, useRef, useEffect } from "react";
-import { Button, UploadAvatar } from "../../components";
+import React, { useState, useEffect } from "react";
+import { Button } from "../../components";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "../../hooks/UseUser";
 import { useFormSteps } from "../../hooks/UseFormSteps";
@@ -7,7 +7,7 @@ import { useToast } from "../../hooks";
 import { api, getAuthorization } from "../../lib/axios";
 import axios from "axios";
 import { Person } from "../../types/person";
-
+import { ArrowLeft, SignOut, PencilSimple } from "phosphor-react";
 
 export const ProfilePage: React.FC = () => {
   const { user, logout } = useUser();
@@ -16,12 +16,9 @@ export const ProfilePage: React.FC = () => {
   const person: Person | undefined =
     (user && (user as any).person) || data.person;
 
-  const [photo, setPhoto] = useState<string | null>(null);
-  const [uploadKey, setUploadKey] = useState(0);
   const [fetchedUser, setFetchedUser] = useState<any | null>(null);
   const { handleToast } = useToast();
 
-  const objectUrlRef = useRef<string | null>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -35,12 +32,10 @@ export const ProfilePage: React.FC = () => {
         }
         getAuthorization(token);
         const { data } = await api.get("/usuario/my");
-        const u = Array.isArray(data) ? data[0] : data;
-        if (u) {
-          setFetchedUser(u);
-          if (u.image) {
-            setPhoto(u.image);
-          }
+        if (data && Array.isArray(data) && data.length > 0) {
+          setFetchedUser(data[0]);
+        } else if (data && !Array.isArray(data)) {
+          setFetchedUser(data);
         }
       } catch (error) {
         if (axios.isAxiosError(error) && error.response?.status === 400) {
@@ -55,151 +50,100 @@ export const ProfilePage: React.FC = () => {
     };
 
     fetchProfile();
-    return () => {
-      if (objectUrlRef.current) {
-        URL.revokeObjectURL(objectUrlRef.current);
-        objectUrlRef.current = null;
-      }
-    };
   }, []);
 
   const displayedPerson: Person | undefined =
     (fetchedUser && fetchedUser.person) || person;
 
-  const avatar =
-    photo ||
-    `https://ui-avatars.com/api/?name=${
-      person
-        ? `${person.firstName}+${person.lastName}`
-        : "Usuario"
+  // Use fetchedUser image or user.image or generate one based on displayed name
+  const avatar = fetchedUser?.image || (user as any)?.image ||
+    `https://ui-avatars.com/api/?name=${displayedPerson
+      ? `${displayedPerson.firstName}+${displayedPerson.lastName}`
+      : "Usuario"
     }&background=0D8ABC&color=fff`;
 
-  const handleAvatarChange = (file: any) => {
-    if (Array.isArray(file)) {
-      if (file.length === 0) {
-        if (objectUrlRef.current) {
-          URL.revokeObjectURL(objectUrlRef.current);
-          objectUrlRef.current = null;
-        }
-        setPhoto(null);
-       
-        setUploadKey((k) => k + 1);
-        return;
-      }
-
-      const first = file[0];
-      if (first instanceof File) {
-        if (objectUrlRef.current) {
-          URL.revokeObjectURL(objectUrlRef.current);
-        }
-        const url = URL.createObjectURL(first);
-        objectUrlRef.current = url;
-        setPhoto(url);
-        return;
-      }
-    }
-
-    if (typeof file === "string" && file) {
-      if (objectUrlRef.current) {
-        URL.revokeObjectURL(objectUrlRef.current);
-        objectUrlRef.current = null;
-      }
-      setPhoto(file);
-      return;
-    }
-    setPhoto(null);
-  };
-
-
   return (
-    <div className="w-full min-h-screen flex items-center justify-center bg-zinc-900 p-6">
-      <div className="w-full max-w-5xl bg-zinc-800 text-white rounded-xl shadow-lg">
-        
-        <div className="border-b border-zinc-700 px-8 py-5">
-          <h1 className="text-white text-3xl font-extrabold">Meu Perfil</h1>
-          <p className="text-sm text-zinc-400">Dados do usuário</p>
+    <div className="w-full min-h-screen flex items-center justify-center bg-zinc-800 px-4 py-8">
+      <div className="w-full max-w-4xl bg-zinc-800 rounded-2xl shadow-2xl overflow-hidden border-2">
+
+        {/* Header */}
+        <div className="bg-[hsl(99,58%,52%)] p-6 flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <button
+              onClick={() => navigate('/home')}
+              className="p-2 rounded-full hover:bg-white/20 text-white transition-colors"
+            >
+              <ArrowLeft size={24} weight="bold" />
+            </button>
+            <h1 className="text-2xl font-bold text-white">Meu Perfil</h1>
+          </div>
         </div>
 
-        <div className="flex gap-10 px-8 py-8">
+        <div className="p-8">
+          <div className="grid md:grid-cols-[250px_1fr] gap-8">
 
-          <div className="w-48 flex flex-col items-center gap-4">
-            <img
-              src={avatar}
-              alt="Avatar"
-              className="w-36 h-36 rounded-full object-cover border-4 border-green-500"
-            />
 
-            <div className="w-full">
-              <UploadAvatar key={uploadKey} onHandleSelectedAvatar={handleAvatarChange} />
-
-              {photo && (
-                <div className="w-full mt-2">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      if (objectUrlRef.current) {
-                        URL.revokeObjectURL(objectUrlRef.current);
-                        objectUrlRef.current = null;
-                      }
-                      setPhoto(null);
-                      setUploadKey((k) => k + 1);
-                    }}
-                    className="w-full text-sm px-3 py-2 bg-zinc-600 hover:bg-zinc-500 text-white rounded-md"
-                  >
-                    Remover foto
-                  </button>
-                </div>
-              )}
+            <div className="flex flex-col items-center pt-8 md:pt-24 gap-6">
+              <div className="relative group">
+                <img
+                  src={avatar}
+                  alt="Avatar"
+                  className="w-40 h-40 rounded-full object-cover border-4 border-[hsl(99,58%,52%)] shadow-xl"
+                />
+              </div>
             </div>
-          </div>
 
-          <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-6">
-            <ProfileField label="Nome">
-              {person
-                ? `${person.firstName}`
-                : "-"}
-            </ProfileField>
 
-            <ProfileField label="Sobrenome">
-              {person
-                ? `${person.lastName}`
-                : "-"}
-            </ProfileField>
+            <div className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <ProfileField label="Nome">
+                  {fetchedUser?.firstName || person?.firstName || "-"}
+                </ProfileField>
 
-            <ProfileField label="E-mail">
-              {user?.mail || "-"}
-            </ProfileField>
+                <ProfileField label="Sobrenome">
+                  {fetchedUser?.lastName || person?.lastName || "-"}
+                </ProfileField>
 
-            <ProfileField label="CPF">
-              {person?.cpf}
-            </ProfileField>
+                <ProfileField label="E-mail">
+                  {fetchedUser?.mail || user?.mail || "-"}
+                </ProfileField>
 
-            <ProfileField label="Telefone">
-              {person?.phone}
-            </ProfileField>
+                <ProfileField label="CPF">
+                  {fetchedUser?.cpf || person?.cpf || "-"}
+                </ProfileField>
 
-            <ProfileField label="Data de nascimento">
-              {person?.birthDate}
-            </ProfileField>
+                <ProfileField label="Telefone">
+                  {fetchedUser?.phone || person?.phone || "-"}
+                </ProfileField>
 
-            <ProfileField label="Endereço" className="md:col-span-2">
-              {person?.address
-                ? `${person.address.addressLine}, ${person.address.addressLineNumber} - ${person.address.city}/${person.address.state}`
-                : "-"}
-            </ProfileField>
-          </div>
-        </div>
+                <ProfileField label="Data de nascimento">
+                  {fetchedUser?.birthDate ? new Date(fetchedUser.birthDate).toLocaleDateString() : (person?.birthDate || "-")}
+                </ProfileField>
 
-        <div className="flex justify-end gap-4 border-t border-zinc-700 px-8 py-5">
-          <div className="flex-1">
-            <Button text="Editar" onClick={() => navigate('/user')} />
-          </div>
-          <div className="flex-1">
-            <Button
-              text="Sair"
-              onClick={logout}
-              className="bg-red-600 hover:bg-red-700"
-            />
+                <ProfileField label="Endereço" className="md:col-span-2">
+                  {fetchedUser?.addressLine
+                    ? `${fetchedUser.addressLine}, ${fetchedUser.addressLineNumber} - ${fetchedUser.city}/${fetchedUser.state}`
+                    : (person?.address ? `${person.address.addressLine}, ${person.address.addressLineNumber} - ${person.address.city}/${person.address.state}` : "-")}
+                </ProfileField>
+              </div>
+
+              <div className="pt-6 border-t border-zinc-700 flex flex-wrap gap-4 justify-end">
+                <Button
+                  text="Editar Perfil"
+                  icon={<PencilSimple size={20} weight="bold" />}
+                  onClick={() => navigate('/user')}
+                  className="w-full md:w-auto"
+                />
+                <button
+                  onClick={logout}
+                  className="flex items-center gap-2 px-6 py-3 bg-red-500/10 text-red-500 font-semibold rounded-lg hover:bg-red-500 hover:text-white transition-all w-full md:w-auto justify-center"
+                >
+                  <SignOut size={20} weight="bold" />
+                  <span>Sair</span>
+                </button>
+              </div>
+            </div>
+
           </div>
         </div>
       </div>
@@ -217,8 +161,8 @@ const ProfileField = ({
   className?: string;
 }) => (
   <div className={className}>
-    <label className="text-sm text-zinc-400">{label}</label>
-    <div className="mt-1 bg-zinc-700 rounded-md px-3 py-2 text-white">
+    <label className="text-sm font-medium text-gray-400 block mb-1">{label}</label>
+    <div className="w-full bg-zinc-700/50 border border-zinc-600 rounded-lg px-4 py-3 text-white font-medium opacity-70 cursor-not-allowed">
       {children || "-"}
     </div>
   </div>
