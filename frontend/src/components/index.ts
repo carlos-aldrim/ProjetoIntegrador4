@@ -16,3 +16,4 @@ export * from "./UploadAvatar";
 export * from "./Login";
 export * from "./Identification";
 export * from "./Security";
+export * from "./UploadExamImage";

@@ -48,11 +48,11 @@ export class UserService {
   ) {
     try {
       const encryptedPassword = password ? encrypt(password) : password;
-      const userUpdate = await this.userRepository.Update(
+      await this.userRepository.Update(
         { isActive, mail, password: encryptedPassword, image, person },
         id
       );
-      return userUpdate;
+      return true;
     } catch (error: any) {
       console.error(error);
       new AppLogger().error(error);

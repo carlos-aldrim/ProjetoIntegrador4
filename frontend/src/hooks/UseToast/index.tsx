@@ -1,4 +1,5 @@
 import { toast } from "react-toastify";
+import { useCallback } from "react";
 import {
   FiInfo,
   FiCheckCircle,
@@ -7,7 +8,7 @@ import {
 } from "react-icons/fi";
 
 export const useToast = () => {
-  const handleToast = (
+  const handleToast = useCallback((
     message = "Houve um erro, tente novamente",
     type: "info" | "success" | "error" | "warning" = "info"
   ) => {
@@ -42,7 +43,7 @@ export const useToast = () => {
         fontFamily: "sans-serif",
       },
     });
-  };
+  }, []);
 
   return {
     handleToast,
