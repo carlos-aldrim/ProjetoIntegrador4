@@ -10,12 +10,11 @@ export class DeleteUserController {
     const userRepository = new UserRepository(prisma);
     const userService = new UserService(userRepository);
 
-    const userDelete = await userService.Delete(id);
-
-    if (!userDelete) {
+    try {
+      await userService.Delete(id);
+      return res.status(200).send({ message: "Conta apagada com sucesso" });
+    } catch (error) {
       return res.status(400).send({ message: "Houve um erro ao apagar conta" });
     }
-
-    return res.status(200).send({ message: "Conta apagada com sucesso" });
   }
 }

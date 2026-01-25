@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form";
 import { Button } from "../../components/Button";
 import { ControllerTextInput } from "../../components/ControllerTextInput";
 import { api } from "../../lib/axios";
+import { useUser } from "../../hooks";
 
 interface ResetPasswordFormInputs {
   password: string;
@@ -13,7 +14,8 @@ interface ResetPasswordFormInputs {
 export const ResetPasswordPage: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const email = location.state?.mail;
+  const { user } = useUser();
+  const email = user?.mail || location.state?.mail;
   const { control, handleSubmit, formState, watch } = useForm<ResetPasswordFormInputs>({
     mode: "onChange",
     defaultValues: { password: "", confirmPassword: "" },

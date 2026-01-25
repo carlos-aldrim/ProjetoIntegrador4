@@ -8,7 +8,24 @@ export class UserRepository {
   constructor(private prisma: PrismaClient) { }
 
   async Save(userData: SaveUserDTO): Promise<string[]> {
+
     const { mail, password, image, person } = userData;
+
+    const existing = await this.prisma.$queryRaw<User[]>`
+      SELECT id FROM "main"."users" WHERE "mail" = ${mail} AND "deletionDate" IS NULL
+    `;
+    if (existing.length > 0) {
+      throw new Error("E-mail já cadastrado para usuário ativo.");
+    }
+
+    const existingCpf = await this.prisma.$queryRaw<User[]>`
+      SELECT u.id FROM "main"."users" u
+      LEFT JOIN "main"."persons" p ON u."personId" = p."id"
+      WHERE p."cpf" = ${person.cpf} AND u."deletionDate" IS NULL
+    `;
+    if (existingCpf.length > 0) {
+      throw new Error("CPF já cadastrado para usuário ativo.");
+    }
 
     const userId = v4();
     const personId = v4();
@@ -80,7 +97,7 @@ export class UserRepository {
       SELECT 
         "id", "name", "mail", "password", "image", "isActive", "recoverPassword"
       FROM "main"."users"
-      WHERE "mail" = ${mail} AND "password" = ${password}
+      WHERE "mail" = ${mail} AND "password" = ${password} AND "deletionDate" IS NULL
     `;
     return user;
   }
@@ -195,7 +212,7 @@ export class UserRepository {
 
   async Delete(id: string): Promise<void> {
     await this.prisma.$transaction(async (prisma) => {
-      await prisma.$queryRaw`
+      const resultUser = await prisma.$queryRaw`
         UPDATE "main"."users"
         SET "deletionDate" = ${new Date()}
         WHERE "id" = ${id}
@@ -207,15 +224,15 @@ export class UserRepository {
         WHERE "id" = ${id}
       `;
 
-      const personId = person[0].personId;
+      const personId = person[0]?.personId;
 
-      await prisma.$queryRaw`
+      const resultPerson = await prisma.$queryRaw`
         UPDATE "main"."persons"
         SET "deletionDate" = ${new Date()}
         WHERE "id" = ${personId}
       `;
 
-      await prisma.$queryRaw`
+      const resultAddress = await prisma.$queryRaw`
         UPDATE "main"."addresses"
         SET "deletionDate" = ${new Date()}
         WHERE "personId" = ${personId}

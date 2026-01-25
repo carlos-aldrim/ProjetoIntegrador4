@@ -9,17 +9,16 @@ import axios from "axios";
 import { Person } from "../../types/person";
 import { ArrowLeft, SignOut, PencilSimple } from "phosphor-react";
 
+
 export const ProfilePage: React.FC = () => {
   const { user, logout } = useUser();
   const { data } = useFormSteps();
-
-  const person: Person | undefined =
-    (user && (user as any).person) || data.person;
-
+  const person: Person | undefined = (user && (user as any).person) || data.person;
   const [fetchedUser, setFetchedUser] = useState<any | null>(null);
   const { handleToast } = useToast();
-
   const navigate = useNavigate();
+  const [showDeletePopup, setShowDeletePopup] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -48,14 +47,10 @@ export const ProfilePage: React.FC = () => {
         }
       }
     };
-
     fetchProfile();
-  }, []);
+  }, [handleToast, navigate]);
 
-  const displayedPerson: Person | undefined =
-    (fetchedUser && fetchedUser.person) || person;
-
-  // Use fetchedUser image or user.image or generate one based on displayed name
+  const displayedPerson: Person | undefined = (fetchedUser && fetchedUser.person) || person;
   const avatar = fetchedUser?.image || (user as any)?.image ||
     `https://ui-avatars.com/api/?name=${displayedPerson
       ? `${displayedPerson.firstName}+${displayedPerson.lastName}`
@@ -130,18 +125,56 @@ export const ProfilePage: React.FC = () => {
               <div className="pt-6 border-t border-zinc-700 flex flex-wrap gap-4 justify-end">
                 <Button
                   text="Editar Perfil"
-                  icon={<PencilSimple size={20} weight="bold" />}
+                  icon={<PencilSimple size={16} weight="bold" />}
                   onClick={() => navigate('/user')}
-                  className="w-full md:w-auto"
+                  className="w-32 h-9 px-3 py-2 text-sm font-semibold"
                 />
-                <button
+                <Button
+                  text="Sair"
+                  icon={<SignOut size={16} weight="bold" />}
                   onClick={logout}
-                  className="flex items-center gap-2 px-6 py-3 bg-red-500/10 text-red-500 font-semibold rounded-lg hover:bg-red-500 hover:text-white transition-all w-full md:w-auto justify-center"
-                >
-                  <SignOut size={20} weight="bold" />
-                  <span>Sair</span>
-                </button>
+                  className="w-32 h-9 px-3 py-2 text-sm font-semibold bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white"
+                />
+                <Button
+                  text="Deletar conta"
+                  onClick={() => setShowDeletePopup(true)}
+                  className="w-32 h-9 px-3 py-2 text-sm font-semibold bg-red-700/80 text-white hover:bg-red-800"
+                />
               </div>
+                  {showDeletePopup && (
+                    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+                      <div className="bg-zinc-800 p-8 rounded-lg shadow-lg text-center w-full max-w-sm">
+                        <h2 className="text-xl font-bold mb-4 text-white">Deseja deletar conta?</h2>
+                        <div className="flex justify-center gap-4 mt-4">
+                          <button
+                            className="px-4 py-2 bg-red-700 text-white rounded hover:bg-red-800"
+                            disabled={isDeleting}
+                            onClick={async () => {
+                              setIsDeleting(true);
+                              try {
+                                const token = localStorage.getItem("token") || "";
+                                getAuthorization(token);
+                                await api.get("/usuario/delete-user");
+                                localStorage.removeItem("token");
+                                handleToast("Conta deletada com sucesso!", "success");
+                                navigate("/");
+                              } catch (err) {
+                                handleToast("Erro ao deletar conta.", "error");
+                              } finally {
+                                setIsDeleting(false);
+                                setShowDeletePopup(false);
+                              }
+                            }}
+                          >Sim</button>
+                          <button
+                            className="px-4 py-2 bg-zinc-600 text-white rounded hover:bg-zinc-700"
+                            onClick={() => setShowDeletePopup(false)}
+                            disabled={isDeleting}
+                          >Não</button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
             </div>
 
           </div>

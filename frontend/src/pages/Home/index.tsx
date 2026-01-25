@@ -35,12 +35,7 @@ export const HomePage: React.FC = () => {
                     </div>
 
                     <div className="space-y-4">
-                        <Button
-                            text="Editar Perfil"
-                            icon={<PencilSimple size={20} weight="bold" />}
-                            onClick={() => navigate('/user')}
-                            className="bg-zinc-700 hover:bg-zinc-600 focus:ring-zinc-500 border border-zinc-600"
-                        />
+                        {/* Botão 'Editar Perfil' removido */}
                         <Button
                             text="Visualizar perfil"
                             icon={<User size={20} weight="bold" />}
@@ -61,6 +56,12 @@ export const HomePage: React.FC = () => {
                     </div>
 
                     <div className="pt-6 mt-auto border-t border-zinc-700">
+                                                <Button
+                                                    text="Redefinir Senha"
+                                                    icon={<PencilSimple size={20} weight="bold" />}
+                                                    onClick={() => navigate('/reset-password')}
+                                                    className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-blue-500/10 text-blue-500 font-semibold rounded-md hover:bg-blue-500 hover:text-white transition-all duration-200 group mb-3"
+                                                />
                         <button
                             onClick={logout}
                             className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-red-500/10 text-red-500 font-semibold rounded-md hover:bg-red-500 hover:text-white transition-all duration-200 group focus:outline-none focus:ring-2 focus:ring-red-500/50"
