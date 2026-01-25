@@ -308,6 +308,7 @@ Permite atualizar dados cadastrais, senha ou informações da pessoa. O e-mail �
 }
 ```
 
+
 #### **6. Apagar Conta**
 `GET /usuario/delete-user`  
 Remove permanentemente a conta do usuário logado e todos os dados vinculados.
@@ -316,6 +317,96 @@ Remove permanentemente a conta do usuário logado e todos os dados vinculados.
 ```json
 {
   "message": "Conta apagada com sucesso"
+}
+```
+
+### Gestão de Provas e Gabaritos
+
+#### **7. Criar Gabarito**
+`POST /exam/criar-gabarito`  
+Cria um novo gabarito com as configurações e respostas corretas para correção automática.
+
+**Exemplo de Corpo (JSON):**
+```json
+{
+  "titulo": "Prova de História - 1º Bimestre",
+  "configuracao": {
+    "quantidade_questoes": 10,
+    "alternativas": ["A", "B", "C", "D", "E"]
+  },
+  "respostas": {
+    "1": "A",
+    "2": "B",
+    "3": "C",
+    "4": "D",
+    "5": "E",
+    "6": "A",
+    "7": "B",
+    "8": "C",
+    "9": "D",
+    "10": "E"
+  }
+}
+```
+
+#### **8. Listar Meus Gabaritos**
+`GET /exam/meus-gabaritos`  
+Retorna uma lista de todos os gabaritos criados pelo usuário logado.
+
+#### **9. Obter Gabarito por ID**
+`GET /exam/obter-gabarito/:id`  
+Retorna os detalhes de um gabarito específico.
+
+#### **10. Atualizar Gabarito**
+`PUT /exam/atualizar-gabarito/:id`  
+Atualiza as informações de um gabarito existente.
+
+**Exemplo de Corpo (JSON):**
+```json
+{
+  "titulo": "Prova de História - Recuperação",
+  "configuracao": {
+    "quantidade_questoes": 5,
+    "alternativas": ["A", "B", "C"]
+  },
+  "respostas": {
+    "1": "A",
+    "2": "B",
+    "3": "C",
+    "4": "A",
+    "5": "B"
+  }
+}
+```
+
+#### **11. Deletar Gabarito**
+`DELETE /exam/deletar-gabarito/:id`  
+Remove um gabarito do sistema.
+
+#### **12. Corrigir Prova**
+`POST /exam/corrigir-prova`  
+Envia a imagem de um cartão-resposta e o ID do gabarito para correção automática através de processamento de imagem.
+
+**Requisitos:**
+- **Content-Type**: `multipart/form-data`
+
+**Campos do Formulário:**
+- `gabaritoId`: ID do gabarito correspondente (String).
+- `image`: Arquivo de imagem da prova (JPG, PNG).
+
+**Exemplo de Resposta (JSON):**
+```json
+{
+  "message": "Prova corrigida com sucesso.",
+  "resultado": {
+    "acertos": 8,
+    "erros": 2,
+    "nota": 8.0,
+    "detalhes": [
+      { "questao": 1, "status": "correta", "resposta_aluno": "A", "gabarito": "A" },
+      { "questao": 2, "status": "incorreta", "resposta_aluno": "C", "gabarito": "B" }
+    ]
+  }
 }
 ```
 
