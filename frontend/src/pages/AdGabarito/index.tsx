@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { useForm, useFieldArray, Controller } from 'react-hook-form';
+import { useForm, useFieldArray } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '../../components';
 import { useToast } from '../../hooks';
 import { api, getAuthorization } from '../../lib/axios';
-import { ArrowLeft, Check, Plus, Trash, CaretDown, CaretUp } from 'phosphor-react';
+import { ArrowLeft, Check, Trash, CaretDown, CaretUp, PencilSimple } from 'phosphor-react';
 import axios from 'axios';
 
 interface AdGabaritoFormInputs {
@@ -36,8 +36,13 @@ export const AdGabaritoPage: React.FC = () => {
     const [alternatives, setAlternatives] = useState<string[]>(['A', 'B', 'C', 'D', 'E']);
     const [gabaritos, setGabaritos] = useState<Gabarito[]>([]);
     const [expandedGabarito, setExpandedGabarito] = useState<string | null>(null);
+    const [showDeletePopup, setShowDeletePopup] = useState(false);
+    const [gabaritoToDelete, setGabaritoToDelete] = useState<string | null>(null);
+    const [editMode, setEditMode] = useState(false);
+    const [editingGabaritoId, setEditingGabaritoId] = useState<string | null>(null);
+    const [isDeleting, setIsDeleting] = useState(false);
 
-    const { control, register, handleSubmit, watch, setValue, formState: { errors } } = useForm<AdGabaritoFormInputs>({
+    const { control, register, handleSubmit, watch, setValue, reset, formState: { errors } } = useForm<AdGabaritoFormInputs>({
         defaultValues: {
             titulo: '',
             quantidade_questoes: 10,
@@ -45,6 +50,37 @@ export const AdGabaritoPage: React.FC = () => {
             respostas: Array.from({ length: 10 }).map((_, i) => ({ questao: i + 1, resposta: '' }))
         }
     });
+    // Função para iniciar edição de um gabarito
+    const handleEditClick = (gabarito: Gabarito) => {
+        setEditMode(true);
+        setEditingGabaritoId(gabarito.id);
+        setNumQuestions(gabarito.configuracao.quantidade_questoes);
+        setAlternatives(gabarito.configuracao.alternativas);
+        // Preencher o formulário com os dados do gabarito
+        reset({
+            titulo: gabarito.titulo,
+            quantidade_questoes: gabarito.configuracao.quantidade_questoes,
+            alternativas: gabarito.configuracao.alternativas.join(', '),
+            respostas: Array.from({ length: gabarito.configuracao.quantidade_questoes }).map((_, i) => ({
+                questao: i + 1,
+                resposta: gabarito.respostas[(i + 1).toString()] || ''
+            }))
+        });
+    };
+
+    // Função para cancelar edição
+    const handleCancelEdit = () => {
+        setEditMode(false);
+        setEditingGabaritoId(null);
+        setNumQuestions(10);
+        setAlternatives(['A', 'B', 'C', 'D', 'E']);
+        reset({
+            titulo: '',
+            quantidade_questoes: 10,
+            alternativas: 'A, B, C, D, E',
+            respostas: Array.from({ length: 10 }).map((_, i) => ({ questao: i + 1, resposta: '' }))
+        });
+    };
 
     const { fields, replace } = useFieldArray({
         control,
@@ -96,23 +132,30 @@ export const AdGabaritoPage: React.FC = () => {
         setAlternatives(split);
     };
 
-    const handleDelete = async (id: string, e: React.MouseEvent) => {
+    const handleDeleteClick = (id: string, e: React.MouseEvent) => {
         e.stopPropagation();
-        if (!window.confirm("Tem certeza que deseja excluir este gabarito?")) {
-            return;
-        }
+        setGabaritoToDelete(id);
+        setShowDeletePopup(true);
+    };
 
+    const handleDeleteConfirm = async () => {
+        if (!gabaritoToDelete) return;
+        setIsDeleting(true);
         try {
             const token = localStorage.getItem('token');
             if (token) {
                 getAuthorization(token);
-                await api.delete(`/exam/deletar-gabarito/${id}`);
+                await api.delete(`/exam/deletar-gabarito/${gabaritoToDelete}`);
                 handleToast("Gabarito excluído com sucesso!", "success");
                 fetchGabaritos();
             }
         } catch (error) {
             console.error("Erro ao excluir gabarito", error);
             handleToast("Erro ao excluir gabarito.", "error");
+        } finally {
+            setIsDeleting(false);
+            setShowDeletePopup(false);
+            setGabaritoToDelete(null);
         }
     };
 
@@ -133,7 +176,6 @@ export const AdGabaritoPage: React.FC = () => {
                 }
             });
 
-         
             if (Object.keys(respostasObject).length !== data.quantidade_questoes) {
                 handleToast("Por favor, preencha o gabarito de todas as questões.", "error");
                 setIsLoading(false);
@@ -149,17 +191,23 @@ export const AdGabaritoPage: React.FC = () => {
                 respostas: respostasObject
             };
 
-            await api.post('/exam/criar-gabarito', payload);
-            handleToast("Gabarito criado com sucesso!", "success");
+            if (editMode && editingGabaritoId) {
+                // Atualizar gabarito existente
+                await api.put(`/exam/atualizar-gabarito/${editingGabaritoId}`, payload);
+                handleToast("Gabarito atualizado com sucesso!", "success");
+                handleCancelEdit();
+            } else {
+                // Criar novo gabarito
+                await api.post('/exam/criar-gabarito', payload);
+                handleToast("Gabarito criado com sucesso!", "success");
+            }
             fetchGabaritos();
-        
-
         } catch (error) {
             console.error(error);
             if (axios.isAxiosError(error) && error.response) {
-                handleToast(error.response.data.message || "Erro ao criar gabarito.", "error");
+                handleToast(error.response.data.message || (editMode ? "Erro ao atualizar gabarito." : "Erro ao criar gabarito."), "error");
             } else {
-                handleToast("Erro desconhecido ao criar gabarito.", "error");
+                handleToast(editMode ? "Erro desconhecido ao atualizar gabarito." : "Erro desconhecido ao criar gabarito.", "error");
             }
         } finally {
             setIsLoading(false);
@@ -179,7 +227,7 @@ export const AdGabaritoPage: React.FC = () => {
                         >
                             <ArrowLeft size={24} weight="bold" />
                         </button>
-                        <h1 className="text-2xl font-bold text-white">Novo Gabarito</h1>
+                        <h1 className="text-2xl font-bold text-white">{editMode ? 'Editar Gabarito' : 'Novo Gabarito'}</h1>
                     </div>
                 </div>
 
@@ -253,9 +301,19 @@ export const AdGabaritoPage: React.FC = () => {
                             </div>
                         </div>
 
-                        <div className="pt-4 border-t border-zinc-700 flex justify-end">
+                        <div className="pt-4 border-t border-zinc-700 flex justify-end gap-2">
+                            {editMode && (
+                                <Button
+                                    text="Cancelar"
+                                    type="button"
+                                    isLoading={isLoading}
+                                    icon={undefined}
+                                    className="md:w-auto w-full bg-zinc-600 hover:bg-zinc-700"
+                                    onClick={handleCancelEdit}
+                                />
+                            )}
                             <Button
-                                text="Salvar Gabarito"
+                                text={editMode ? "Atualizar Gabarito" : "Salvar Gabarito"}
                                 type="submit"
                                 isLoading={isLoading}
                                 icon={<Check size={20} weight="bold" />}
@@ -293,13 +351,22 @@ export const AdGabaritoPage: React.FC = () => {
                                             {expandedGabarito === gabarito.id ? <CaretUp size={20} /> : <CaretDown size={20} />}
                                         </div>
                                     </button>
-                                    <button
-                                        onClick={(e) => handleDelete(gabarito.id, e)}
-                                        className="text-gray-400 hover:text-red-500 p-2 hover:bg-red-500/10 rounded-lg transition-all"
-                                        title="Excluir Gabarito"
-                                    >
-                                        <Trash size={20} weight="bold" />
-                                    </button>
+                                    <div className="flex gap-2">
+                                        <button
+                                            onClick={() => handleEditClick(gabarito)}
+                                            className="text-gray-400 hover:text-yellow-500 p-2 hover:bg-yellow-500/10 rounded-lg transition-all"
+                                            title="Editar Gabarito"
+                                        >
+                                            <PencilSimple size={20} weight="bold" />
+                                        </button>
+                                        <button
+                                            onClick={(e) => handleDeleteClick(gabarito.id, e)}
+                                            className="text-gray-400 hover:text-red-500 p-2 hover:bg-red-500/10 rounded-lg transition-all"
+                                            title="Excluir Gabarito"
+                                        >
+                                            <Trash size={20} weight="bold" />
+                                        </button>
+                                    </div>
                                 </div>
 
                                 {expandedGabarito === gabarito.id && (
@@ -323,6 +390,26 @@ export const AdGabaritoPage: React.FC = () => {
                     )}
                 </div>
             </div>
+            {/* Modal de confirmação de exclusão */}
+            {showDeletePopup && (
+                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+                    <div className="bg-zinc-800 p-8 rounded-lg shadow-lg text-center w-full max-w-sm">
+                        <h2 className="text-xl font-bold mb-4 text-white">Deseja excluir este gabarito?</h2>
+                        <div className="flex justify-center gap-4 mt-4">
+                            <button
+                                className="px-4 py-2 bg-red-700 text-white rounded hover:bg-red-800"
+                                disabled={isDeleting}
+                                onClick={handleDeleteConfirm}
+                            >Sim</button>
+                            <button
+                                className="px-4 py-2 bg-zinc-600 text-white rounded hover:bg-zinc-700"
+                                onClick={() => { setShowDeletePopup(false); setGabaritoToDelete(null); }}
+                                disabled={isDeleting}
+                            >Não</button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

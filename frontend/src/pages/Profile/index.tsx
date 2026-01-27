@@ -122,23 +122,23 @@ export const ProfilePage: React.FC = () => {
                 </ProfileField>
               </div>
 
-              <div className="pt-6 border-t border-zinc-700 flex flex-wrap gap-4 justify-end">
+              <div className="pt-6 border-t border-zinc-700 flex flex-wrap gap-4 justify-end items-center">
                 <Button
                   text="Editar Perfil"
-                  icon={<PencilSimple size={16} weight="bold" />}
+                  icon={<PencilSimple size={20} weight="bold" />}
                   onClick={() => navigate('/user')}
-                  className="w-32 h-9 px-3 py-2 text-sm font-semibold"
+                  className="!w-40 !h-9 !px-3 !py-2 text-sm font-semibold bg-[hsl(99,58%,52%)] text-white rounded flex items-center justify-center gap-2 hover:bg-[hsl(99,58%,42%)] transition-colors"
                 />
                 <Button
                   text="Sair"
-                  icon={<SignOut size={16} weight="bold" />}
+                  icon={<svg xmlns='http://www.w3.org/2000/svg' className='h-4 w-4 mr-1' fill='none' viewBox='0 0 24 24' stroke='currentColor' strokeWidth={2}><path strokeLinecap='round' strokeLinejoin='round' d='M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a2 2 0 01-2 2H7a2 2 0 01-2-2V7a2 2 0 012-2h4a2 2 0 012 2v1' /></svg>}
                   onClick={logout}
-                  className="w-32 h-9 px-3 py-2 text-sm font-semibold bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white"
+                  className="!w-32 !h-9 !px-3 !py-2 text-sm font-semibold bg-zinc-700 text-white rounded flex items-center justify-center gap-2 hover:bg-zinc-800 transition-colors"
                 />
                 <Button
                   text="Deletar conta"
                   onClick={() => setShowDeletePopup(true)}
-                  className="w-32 h-9 px-3 py-2 text-sm font-semibold bg-red-700/80 text-white hover:bg-red-800"
+                  className="!w-40 !h-9 !px-3 !py-2 text-sm font-semibold bg-red-700 text-white rounded flex items-center justify-center gap-2 hover:bg-red-800 transition-colors"
                 />
               </div>
                   {showDeletePopup && (
