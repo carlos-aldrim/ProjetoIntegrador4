@@ -64,9 +64,9 @@ export class LoginUserController {
             message: "Token de verificação enviado para o e-mail!",
           })
           .status(200);
-      } catch (error) {
+      } catch (error: any) {
         new AppLogger().error(error);
-        return res.send({ message: "Erro ao realizar login" }).status(401);
+        return res.status(500).send({ message: "Erro ao realizar login", details: error.message });
       }
     }
   }
