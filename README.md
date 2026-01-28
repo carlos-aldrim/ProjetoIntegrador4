@@ -27,7 +27,9 @@ Certifique-se de ter as seguintes ferramentas instaladas antes de começar:
 
 - **Node.js** (versão 14.x.x ou superior)
   - [Download Node.js](https://nodejs.org/)
-
+  
+- **Python** (versão 14.x.x ou superior)
+  - [Download Python](https://www.python.org/downloads/)
 ---
 
 ## Instalação
@@ -57,7 +59,13 @@ cd ProjetoIntegrador2
 cd backend
 npm install
 ```
+```bash
+pip install opencv-python
+pip install numpy
+pip install scikit-learn
+pip install joblib
 
+```
 ### 3. Configure o banco de dados
 
 Rode as migrations para configurar o esquema do banco de dados:
