@@ -28,7 +28,7 @@ Certifique-se de ter as seguintes ferramentas instaladas antes de começar:
 - **Node.js** (versão 14.x.x ou superior)
   - [Download Node.js](https://nodejs.org/)
   
-- **Python** (versão 14.x.x ou superior)
+- **Python** 
   - [Download Python](https://www.python.org/downloads/)
 ---
 
