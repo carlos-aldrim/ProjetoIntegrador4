@@ -36,7 +36,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
       try {
         setLoading(true);
         const response = await axios.post<{ message: string }>(
-          "http://localhost:3001/usuario/login",
+          "https://projetointegrador4-2.onrender.com/usuario/login",
           { mail, password }
         );
 
@@ -62,7 +62,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
       try {
         setLoading(true);
         const response = await axios.post<ResponseLoginUser>(
-          "http://localhost:3001/usuario/confirm-token",
+          "https://projetointegrador4-2.onrender.com/usuario/confirm-token",
           { mail, confirmToken }
         );
 
@@ -90,7 +90,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
 
         console.log(user);
         const response = await axios.post<ResponseCreateUser>(
-          "http://localhost:3001/usuario/new-user",
+          "https://projetointegrador4-2.onrender.com/usuario/new-user",
           user
         );
 

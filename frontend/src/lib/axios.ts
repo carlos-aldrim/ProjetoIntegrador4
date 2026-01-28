@@ -1,7 +1,7 @@
 import axios, { AxiosError } from "axios";
 
 export const api = axios.create({
-  baseURL: "http://localhost:3001",
+  baseURL: "https://projetointegrador4-2.onrender.com",
 });
 
 export const getAuthorization = (token: string) => {
