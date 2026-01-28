@@ -50,23 +50,20 @@ export class LoginUserController {
             lastName: true,
           },
         });
-        
-        const fullName = person ? `${person.firstName} ${person.lastName}` : "Usuário";
 
-        await sendVerificationTokenEmail(
-          mail,
-          fullName,
-          verificationToken
+        const fullName = person
+          ? `${person.firstName} ${person.lastName}`
+          : "Usuário";
+
+        sendVerificationTokenEmail(mail, fullName, verificationToken).catch(
+          (err) => new AppLogger().error(err),
         );
-
-        return res
-          .send({
-            message: "Token de verificação enviado para o e-mail!",
-          })
-          .status(200);
+        res.status(200).send({ message: "Token de verificação enviado para o e-mail!" });
       } catch (error: any) {
         new AppLogger().error(error);
-        return res.status(500).send({ message: "Erro ao realizar login", details: error.message });
+        return res
+          .status(500)
+          .send({ message: "Erro ao realizar login", details: error.message });
       }
     }
   }
